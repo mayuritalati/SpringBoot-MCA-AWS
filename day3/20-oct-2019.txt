@@ -1,0 +1,4 @@
+spring web mvc
+spring rest api
+mvc model specific to java
+	 4 types of jsp model

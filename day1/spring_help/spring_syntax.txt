@@ -1,0 +1,307 @@
+
+example scenarios
+
+1. setter based DI
+<bean id="exampleBean" class="examples.ExampleBean">
+<!-- setter injection using the nested <ref/> element -->
+<property name="beanOne"><ref bean="anotherExampleBean"/></property>
+<!-- setter injection using the neater 'ref' attribute -->
+<property name="beanTwo" ref="yetAnotherBean"/>
+<property name="integerProperty" value="1"/>
+</bean>
+<bean id="anotherExampleBean" class="examples.AnotherBean"/>
+<bean id="yetAnotherBean" class="examples.YetAnotherBean"/>
+
+public class ExampleBean {
+private AnotherBean beanOne;
+private YetAnotherBean beanTwo;
+private int i;
+public void setBeanOne(AnotherBean beanOne) {
+this.beanOne = beanOne;
+}
+public void setBeanTwo(YetAnotherBean beanTwo) {
+this.beanTwo = beanTwo;
+}
+public void setIntegerProperty(int i) {
+this.i = i;
+}
+}
+
+2. Constructor based DI
+
+<bean id="exampleBean" class="examples.ExampleBean">
+<!-- constructor injection using the nested <ref/> element -->
+<constructor-arg>
+<ref bean="anotherExampleBean"/>
+</constructor-arg>
+<!-- constructor injection using the neater 'ref' attribute -->
+<constructor-arg ref="yetAnotherBean"/>
+<constructor-arg type="int" value="1"/>
+</bean>
+<bean id="anotherExampleBean" class="examples.AnotherBean"/>
+<bean id="yetAnotherBean" class="examples.YetAnotherBean"/>
+
+
+public class ExampleBean {
+private AnotherBean beanOne;
+private YetAnotherBean beanTwo;
+private int i;
+public ExampleBean(
+AnotherBean anotherBean, YetAnotherBean yetAnotherBean, int i) {
+this.beanOne = anotherBean;
+this.beanTwo = yetAnotherBean;
+this.i = i;
+}
+}
+3. static factory method based DI
+<bean id="exampleBean" class="examples.ExampleBean"
+factory-method="createInstance">
+<constructor-arg ref="anotherExampleBean"/>
+<constructor-arg ref="yetAnotherBean"/>
+<constructor-arg value="1"/>
+</bean>
+<bean id="anotherExampleBean" class="examples.AnotherBean"/>
+<bean id="yetAnotherBean" class="examples.YetAnotherBean"/>
+public class ExampleBean {
+// a private constructor
+private ExampleBean(...) {
+...
+}
+// a static factory method; the arguments to this method can be
+// considered the dependencies of the bean that is returned,
+// regardless of how those arguments are actually used.
+public static ExampleBean createInstance (
+AnotherBean anotherBean, YetAnotherBean yetAnotherBean, int i) {
+ExampleBean eb = new ExampleBean (...);
+// some other operations...
+return eb;
+}
+}
+
+4. usage of p namespace
+
+<bean id="myDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+<!-- results in a setDriverClassName(String) call -->
+<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+<property name="url" value="jdbc:mysql://localhost:3306/mydb"/>
+<property name="username" value="root"/>
+<property name="password" value="root"/>
+</bean>
+The following example uses the p-namespace for clear XML configuration.
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:p="http://www.springframework.org/schema/p"
+xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+<bean id="myDataSource" class="org.apache.commons.dbcp.BasicDataSource"
+destroy-method="close"
+p:driverClassName="com.mysql.jdbc.Driver"
+p:url="jdbc:mysql://localhost:3306/mydb"
+p:username="root"
+p:password="root"/>
+</beans>
+
+5. Inner beans
+A <bean/> element inside the <property/> or <constructor-arg/> elements defines a
+so-called inner bean.
+<bean id="outer" class="...">
+<!-- instead of using a reference to a target bean, simply define the target bean inline -->
+<property name="target">
+<bean class="com.example.Person"> <!-- this is the inner bean -->
+<property name="name" value="Fiona Apple"/>
+<property name="age" value="25"/>
+</bean>
+</property>
+</bean>
+
+6. Collection based properties(raw or non-generic collections)
+<bean id="moreComplexObject" class="example.ComplexObject">
+<!-- results in a setAdminEmails(java.util.Properties) call -->
+<property name="adminEmails">
+<props>
+<prop key="administrator">administrator@example.org</prop>
+<prop key="support">support@example.org</prop>
+<prop key="development">development@example.org</prop>
+</props>
+</property>
+<!-- results in a setSomeList(java.util.List) call -->
+<property name="someList">
+<list>
+<value>a list element followed by a reference</value>
+<ref bean="myDataSource" />
+</list>
+</property>
+<!-- results in a setSomeMap(java.util.Map) call -->
+<property name="someMap">
+<map>
+<entry key="an entry" value="just some string"/>
+<entry key ="a ref" value-ref="myDataSource"/>
+</map>
+</property>
+<!-- results in a setSomeSet(java.util.Set) call -->
+<property name="someSet">
+<set>
+<value>just some string</value>
+<ref bean="myDataSource" />
+</set>
+</property>
+</bean>
+
+7. setting typed(generic) collections
+public class Foo {
+private Map<String, Float> accounts;
+public void setAccounts(Map<String, Float> accounts) {
+this.accounts = accounts;
+}
+}
+<beans>
+<bean id="foo" class="x.y.Foo">
+<property name="accounts">
+<map>
+<entry key="one" value="9.99"/>
+<entry key="two" value="2.75"/>
+<entry key="six" value="3.99"/>
+</map>
+</property>
+</bean>
+</beans>
+
+8.setting empty or null values
+<bean class="ExampleBean">
+<property name="email" value=""/>
+</bean>
+
+ equivalent Java code: exampleBean.setEmail("").
+
+ <bean class="ExampleBean">
+<property name="email"><null/></property>
+</bean>
+ equivalent Java code: exampleBean.setEmail(null);
+
+9. Lazy initialization of beans
+<bean id="lazy" class="com.foo.ExpensiveToCreateBean" lazy-init="true"/>
+<bean name="not.lazy" class="com.foo.AnotherBean"/>
+When this  configuration is loaded by an ApplicationContext, the bean named lazy
+is not eagerly pre-instantiated when the ApplicationContext is starting up, whereas the not.lazy bean is eagerly pre-instantiated.
+
+10 auto wiring of beans --- 
+public class MovieRecommender {
+@Autowired
+@Qualifier("main")
+private MovieCatalog movieCatalog;
+// ...
+}
+The @Qualifier annotation can also be specified on individual constructor arguments or method parameters:
+public class MovieRecommender {
+private MovieCatalog movieCatalog;
+private CustomerPreferenceDao customerPreferenceDao;
+@Autowired
+public void prepare(@Qualifier("main") MovieCatalog movieCatalog,
+CustomerPreferenceDao customerPreferenceDao) {
+this.movieCatalog = movieCatalog;
+this.customerPreferenceDao = customerPreferenceDao;
+}
+// ...
+}
+The corresponding bean definitions appear as follows. The bean with qualifier value "main" is wired with the constructor argument that is qualified with the same value.
+<context:annotation-config/>
+<bean class="example.SimpleMovieCatalog">
+<qualifier value="main"/>
+<!-- inject any dependencies required by this bean -->
+</bean>
+<bean class="example.ActionMovieCatalog">
+<qualifier value="action"/>
+<!-- inject any dependencies required by this bean -->
+</bean>
+<bean id="movieRecommender" class="example.MovieRecommender"/>
+
+</beans>
+11. auto-wiring by type
+It is also possible to provide all beans of a particular type from the ApplicationContext by adding the annotation to a field or method that expects an array of that type:
+public class MovieRecommender {
+@Autowired
+private MovieCatalog[] movieCatalogs;
+// ...
+}
+The same applies for typed collections:
+public class MovieRecommender {
+private Set<MovieCatalog> movieCatalogs;
+@Autowired
+public void setMovieCatalogs(Set<MovieCatalog> movieCatalogs) {
+this.movieCatalogs = movieCatalogs;
+}
+// ...
+}
+
+12. To supply bean scope using annotation
+
+@Scope("prototype")
+@Repository
+public class MovieFinderImpl implements MovieFinder {
+// ...
+}
+
+
+
+
+AOP Pointcut examples
+1.
+the execution of any method with a name beginning with "set":
+execution(* set*(..))
+
+• the execution of any method defined by the AccountService interface:
+execution(* com.xyz.service.AccountService.*(..))
+
+• the execution of any method defined in the service package:
+execution(* com.xyz.service.*.*(..))
+
+• the execution of any method defined in the service package or a sub-package:
+execution(* com.xyz.service..*.*(..))
+
+• any join point  within the service package:
+within(com.xyz.service.*)
+
+• any join point (method execution only in Spring AOP) within the service package or a sub-package:
+within(com.xyz.service..*)
+
+• any join point (method execution only in Spring AOP) where the proxy implements the
+AccountService interface:
+this(com.xyz.service.AccountService)
+
+Any join pointwhere  the method is defined
+in a type in the com.xyz.someapp.dao package or any sub-package
+ under that.
+@Pointcut("within(com.xyz.someapp.dao..*)")
+public void inDataAccessLayer() {}
+
+
+@Pointcut("execution(public * *(..))")
+private void anyPublicOperation() {} --- matches if a method execution join point represents the execution of any public method
+@Pointcut("within(com.xyz.someapp.trading..*)")
+private void inTrading() {} --- matches if a method execution is in the trading module
+@Pointcut("anyPublicOperation() && inTrading()")
+private void tradingOperation() {} --- matches if a method execution represents any public method in the trading module
+
+
+
+AOP related -- passing argument to advice when it meets the point cut
+To make argument values available to the advice body, you can use the binding form of args. If a parameter name is used in place of a type name in an args expression, then the value of the corresponding argument will be passed as the parameter value when the advice is invoked. eg  Suppose you want to advise the execution of dao operations that take an Account object as the first parameter, and you need access to the account in the advice body. You could write the following:
+
+@Before("com.xyz.myapp.SystemArchitecture.dataAccessOperation() &&" + 
+        "args(account,..)")
+public void validateAccount(Account account) {
+  // ...
+}
+
+The args(account,..) part of the pointcut expression serves two purposes: firstly, it restricts matching to only those method executions where the method takes at least one parameter, and the argument passed to that parameter is an instance of Account; secondly, it makes the actual Account object available to the advice via the account parameter.
+
+Another way of writing this is to declare a pointcut that "provides" the Account object value when it matches a join point, and then just refer to the named pointcut from the advice. This would look as follows:
+
+@Pointcut("com.xyz.myapp.SystemArchitecture.dataAccessOperation() &&" + 
+          "args(account,..)")
+private void accountDataAccessOperation(Account account) {}
+
+@Before("accountDataAccessOperation(account)")
+public void validateAccount(Account account) {
+  // ...
+}

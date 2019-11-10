@@ -1,0 +1,75 @@
+What is Spring Expression Language (SpEL)?
+
+SpEL is powerful expression language created by Spring framework community to work with all the Spring framework products. It supports querying and manipulating an object graph at runtime.There are several existing expression languages like JSP EL, OGNL and JBoss EL. SpEL is created to help the Spring porfolio products. 
+The syntax used for the SpEL is same like Unified EL. But, it has lot of powerful features that are missing in the Unified EL. Its introduced in Spring 3.x
+
+Another advantage of SpEL is it can work independently without depending on the Spring environment. 
+
+1. Using SpEL -- programmatically
+
+API package -- org.springframework.expression , its sub packages and spel.support.
+
+The  ExpressionParser  is central i/f responsible for parsing an expression string. 
+It Parses expression strings into compiled expressions that can be evaluated repeatedly.
+
+example --- eclipse project -- spring_intro
+pkg --com.app.spel
+tester class -- ExpressionTest.java
+
+1.1 Steps are --- First create SpEL parser object org.springframework.expression.spel.standard.SpelExpressionParser) , use its parseExpression(String expr) method to parse expression & then use getValue method of Expression object to get results.
+expr -- can be literal string , method invocation syntax, can use Javabean style invocation syntax or can even invoke constructors.
+
+May raise  Exceptions --- ParseException when calling 'parser.parseExpression'and EvaluationException  when calling 'exp.getValue' respectively.
+
+Expression i/f methods
+1. Object getValue() throws EvaluationException
+OR
+2. <T> T getValue(Class<T> desiredResultType)  throws EvaluationException
+
+
+
+
+
+
+2. SpEL expressions can be used with XML or annotation based configuration metadata for defining Beans.
+
+ In both cases the syntax to define the expression is of the form #{ <expression
+string> }.
+
+Usage of SpEL in XML config 
+
+example -- eclipse project --spring_intro
+pkg -- com.app.spel
+bean -- NumberGuess
+xml -- from resources -- spel_beans.xml
+tester -- ExpressionTest2
+
+Usage of SpEL in XML config 
+
+example -- eclipse project --test_spring
+pkg -- spel.model
+beans -- Customer,Item
+xml -- from resources -- spel_config.xml
+tester -- spel.tester.Tester
+
+Usage of Spel in annotations
+
+example -- eclipse project --test_spring
+pkg -- spel.model.anno2
+beans -- Customer,Address,DataBean
+xml -- from resources -- spel_anno_config.xml
+tester -- spel.tester.TesterAnno
+
+
+Usage of collection handling via Spel in annotations
+
+example -- eclipse project --test_spring
+pkg -- spel.model.collections
+beans -- Test(having map,list based collections),Customer
+xml -- from resources -- spel_collection.xml
+tester -- spel.tester.TesterCollections
+
+
+More syntax eg for spel & java config -- pg 44,193
+
+

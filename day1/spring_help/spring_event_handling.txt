@@ -1,0 +1,88 @@
+ApplicationContext, is the core of Spring  which manages complete life cycle of the beans.
+
+ The ApplicationContext publishes certain types of events when loading the beans. For example, a ContextStartedEvent is published when the context is started and ContextStoppedEvent is published when the context is stopped.
+
+Event handling in the ApplicationContext is provided through the ApplicationEvent class and ApplicationListener interface. 
+So if a bean implements the ApplicationListener, then every time an ApplicationEvent gets published to the ApplicationContext, that bean is notified.
+
+Spring provides the following standard events: (Spring Built-in Events)
+1 ContextRefreshedEvent
+This event is published when the ApplicationContext is either initialized or refreshed. This can also be raised using the refresh() method on the ConfigurableApplicationContext interface.
+2 ContextStartedEvent
+This event is published when the ApplicationContext is started using the start() method on the ConfigurableApplicationContext interface. You can poll your database or you can re/start any stopped application after receiving this event.
+3 ContextStoppedEvent
+This event is published when the ApplicationContext is stopped using the stop() method on the ConfigurableApplicationContext interface. 
+4 ContextClosedEvent
+This event is published when the ApplicationContext is closed using the close() method on the ConfigurableApplicationContext interface. A closed context reaches its end of life; it cannot be refreshed or restarted.
+5 RequestHandledEvent
+This is a web-specific event telling all beans that an HTTP request has been serviced.
+
+Spring's event handling is single-threaded so if an event is published, until and unless all the receivers get the message, the processes are blocked and the flow will not continue. Design hint --- Must have fast returning even handlers.
+
+Listening to Context Events:
+
+1. To listen a context event, a bean should implement the ApplicationListener interface which has just one method onApplicationEvent().
+API ---pkg -- org.springframework.context
+ public interface ApplicationListener<E extends ApplicationEvent> 
+
+& override a method  --- to handle an application event.
+void onApplicationEvent(E event)
+
+where E = spring built event types described above.
+
+Eclipse Project  -- spring_intro
+pkg -- com.app.simple11
+Bean-HelloWorld
+Event Handler Beans --CStartEventHandler & CStopEventHandler
+Tester --- MainApp.java
+
+Creating & Handling Custom Events
+Steps 
+1. Create an event class,(eg) CustomEvent by extending ApplicationEvent. This class must define a costructor.
+API
+public abstract class ApplicationEvent
+extends EventObject
+This Class must extended by all application events. Abstract class.
+
+Constructor details 
+public ApplicationEvent(Object source)
+
+Create a new ApplicationEvent.
+source - the component that published the event (never null)
+
+
+
+
+2	Once your event class is defined, you can publish it from any class, eg -- EventClassPublisher -- It should  implement ApplicationEventPublisherAware. 
+
+pkg ---org.springframework.context
+API  
+public interface ApplicationEventPublisherAware 
+
+Interface to be implemented by any object that wishes to be notified of the ApplicationEventPublisher (typically the ApplicationContext) that it runs in.
+
+2.1 Supply a setter 
+public void setApplicationEventPublisher(ApplicationEventPublisher publisher) 
+-- will be called by spring container to supply publisher instance.
+
+2.2
+API 
+public interface ApplicationEventPublisher
+It supplies event publication functionality.
+Method -- 
+void publishEvent(ApplicationEvent event)
+
+It notifies all listeners registered with this application of an application event. Events may be builtin events or application-specific events(custom events)
+
+
+
+
+
+5	A published event can be handled in a class, let us say EventClassHandler which implements ApplicationListener interface and implements onApplicationEvent method for the custom event.
+6	Create beans configuration file Beans.xml under the src folder and a MainApp class which will work as Spring application.
+7	The final step is to create the content of all the Java files and Bean Configuration file and run the application as explained below.
+
+Here is the content of CustomEvent.java file:
+
+
+

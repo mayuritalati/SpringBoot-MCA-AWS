@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd" default-lazy-init="false">
+
+	<bean class="com.mayuri.company.dao.EmployeeDaoImpl" id="employeeDao"></bean>
+	
+	<bean class="com.mayuri.company.service.EmployeeServiceImpl" id = "employeeService">
+		<constructor-arg name="employeeDao" ref="employeeDao"></constructor-arg>
+	</bean>
+	
+	<bean class="com.mayuri.company.main.CompanyMainApp" id= "companyMainApp">
+		<property name="employeeService" ref="employeeService"></property>
+	</bean>
+</beans>

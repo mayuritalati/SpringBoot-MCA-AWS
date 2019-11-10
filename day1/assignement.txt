@@ -1,0 +1,33 @@
+1. employee assignement 
+2. application name spring-company-v1
+3. package com.mayuri.company.model, data, dal, 
+4. datasouruse class employeeMap name
+5. dao class name EmployeeDao
+				method-boolean 
+						save(Account account)
+						boolean update(Account account)
+						Account findByAccountId(int empId)
+						boolean delete(int empId)
+						List<Account> findAll()
+					Note: MapAcountDaoImpl
+6. account service 
+			all dao 5 mthods
+			
+7. Account service impl
+8. main method
+	com.mayuri.company.presentation layer
+9. Companymainapplication
+10.	employee: 
+		id, name, salary, doj, pan, email, mobile
+
+11	use classpathapplicationcontext
+12 constructor base injection
+13 setter base injection
+14 singletone scope
+15 prototype scope
+16 init life cyle method
+17 destroy 
+13 di
+14 ioc
+
+	

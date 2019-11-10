@@ -1,0 +1,270 @@
+
+AOP with Spring Framework
+
+One of the key components of Spring Framework is the Aspect oriented programming (AOP) framework. 
+
+Like DI, AOP supports loose coupling of application objects.
+
+ The functionalities  that span multiple points of an application are called cross-cutting concerns.
+
+With AOP, applicationwide concerns(common concerns-responsibilities or cross-cutting concerns like  eg - declarative transactions , security,logging,monitoring,auditing,authentication....)
+are decoupled from the objects to which they are applied.
+
+Its better for  application objects to focus on the business domain problems they’re designed for and leave certain ASPECTS to be handled by someone else.
+
+Job of AOP framework is --- Separating these cross-cutting concerns from the business logic 
+
+The key unit of modularity in OOP is the class, whereas in AOP the unit of modularity is the aspect. Dependency Injection helps you decouple your application objects from each other and AOP helps you decouple cross-cutting concerns from the objects that they affect.
+
+AOP is like triggers in programming languages such as Perl, .NET, Java and others.
+
+Spring AOP module provides interceptors to intercept an application, for example, when a method is executed, you can add extra functionality before or after the method execution.
+
+-------------------------------------------------------------------------------------------------------------
+
+AOP Terminologies:
+
+
+Aspect ---	A module which has a set of APIs providing cross-cutting requirements. For example, a logging module would be called AOP aspect for logging. An application can have any number of aspects depending on the requirement.
+
+Advice	This is the actual action to be taken either before or after the method 
+
+Join point	 -- This represents a point in your application where you can plug-in AOP aspect. OR it is the actual place in the application where an action will be taken using Spring AOP framework.
+In Spring AOP, a join point always represents a method execution.
+
+Pointcut	-- This is a set of one or more joinpoints where an advice code intercepts method execution.You can specify pointcuts using expressions or patterns .
+
+
+Introduction ---	An introduction allows you to add new methods or attributes to existing classes.
+
+Advisor – Group of  ‘Advice’ and ‘Pointcut’ into a single unit  and can be passed  to a proxy factory object.
+
+Target object -- 	The object being advised by one or more aspects, this object will always be a proxied object. Also referred to as the advised object.
+
+Weaving --- Weaving is the process of linking aspects with other application types or objects to create an advised object. This can be done at compile time, load time, or at runtime. Spring AOP supports dynamic (run-time) weaving.
+
+-------------------------------------------------------------------------------------------------------------
+
+Types of Advice
+
+Spring aspects can work with five kinds of advice mentioned below:
+
+before	Run advice before the a method execution.
+after	Run advice after the a method execution regardless of its outcome.
+after-returning	Run advice after the a method execution only if method completes successfully.
+after-throwing	Run advice after the a method execution only if method exits by throwing an exception.
+around	Run advice before and after the advised method is invoked.
+
+-------------------------------------------------------------------------------------------------------------
+
+Custom Aspects Implementation
+
+Spring supports the @AspectJ annotation style approach and the schema-based approach to implement custom aspects.
+XML Schema based	Aspects  ---  are implemented using regular classes along with XML based configuration.
+
+XML Based AOP
+Steps 
+1.Enable aop namespace in xml config file
+2.Additional JARs required are -- aspectjrt.jar,aspectjweaver.jar,aopalliance.jar,spring-aop jar
+3.
+Declare an aspect
+
+An aspect is declared using the <aop:aspect> element, and the backing bean(aspect bean i.e bean containing advice code) is referenced using the ref attribute as follows:
+
+<aop:config>
+   <aop:aspect id="myAspect" ref="aBean">
+   ...
+   </aop:aspect>
+</aop:config>
+
+<bean id="aBean" class="...">
+...
+</bean>
+
+Here "aBean" will be configured and  injected just like any other Spring bean. 
+
+4. Declare a pointcut
+
+A pointcut helps in selecting the join points (ie methods) of interest to be executed with different advices. Pointcut is defined as follows:
+eg --
+ Following example defines a pointcut named 'businessService' that will match the execution of any method (having any parameters)  available in any class under the package com.xyz.myapp.service or below.
+
+<aop:config>
+   <aop:aspect id="myAspect" ref="aBean">
+
+   <aop:pointcut id="businessService"
+      expression="execution(* com.xyz.myapp.service.*.*(..))"/>
+   ...
+   </aop:aspect>
+</aop:config>
+
+<bean id="aBean" class="...">
+...
+</bean>
+
+ Following example defines a pointcut named 'businessService' that will match the execution of getName() method available in Student class under the package com.aop.simple
+
+<aop:config>
+   <aop:aspect id="myAspect" ref="aBean">
+
+   <aop:pointcut id="businessService"
+      expression="execution(* com.aop.simple.Student.getName(..))"/>
+   ...
+   </aop:aspect>
+</aop:config>
+
+<bean id="aBean" class="...">
+...
+</bean>
+
+5. Declare advices
+
+You can declare any of the five advices inside an <aop:aspect> using the <aop:adviceName> element as given below:
+
+<aop:config>
+   <aop:aspect id="myAspect" ref="aBean">
+      <aop:pointcut id="businessService"
+         expression="execution(* com.xyz.myapp.service.*.*(..))"/>
+
+      <!-- a before advice definition -->
+      <aop:before pointcut-ref="businessService" 
+         method="doRequiredTask"/>
+
+      <!-- an after advice definition -->
+      <aop:after pointcut-ref="businessService" 
+         method="doRequiredTask"/>
+
+      <!-- an after-returning advice definition -->
+      <!--The doRequiredTask method must have parameter named retVal -->
+      <aop:after-returning pointcut-ref="businessService"
+         returning="retVal"
+         method="doRequiredTask"/>
+
+      <!-- an after-throwing advice definition -->
+      <!--The doRequiredTask method must have parameter named ex -->
+      <aop:after-throwing pointcut-ref="businessService"
+         throwing="ex"
+         method="doRequiredTask"/>
+
+      <!-- an around advice definition -->
+      <aop:around pointcut-ref="businessService" 
+         method="doRequiredTask"/>
+   ...
+   </aop:aspect>
+</aop:config>
+
+<bean id="aBean" class="...">
+...
+</bean>
+
+You can use same doRequiredTask or different methods for different advices. These methods will be defined as a part of aspect module.
+
+example -- eclipse project spring_aop_intro
+pkg --com.aop.simple
+bean i/f -- StudentIntf
+bean -- Student
+Aspect -- Logging
+tester -- MainApp
+xml -- from resources beans.xml
+
+-------------------------------------------------------------------------------------------------------------
+Another realistic example
+eclipse project spring_aop3
+pkg --com.app.aop.security
+Model -- SecurityToken
+Custome Exception -- SecurityViolationException
+Service Bean -- SecurityService
+Target bean i/f -- com.app.bank.ATM
+Target bean class-- com.app.bank.ATMImpl
+Aspect -- SecurityAdvice
+Dependencies(transport) ---com.app.bank.transport
+tester -- com.app.bank.SpringBankAop
+xml -- from resources aop-security.xml
+
+-------------------------------------------------------------------------------------------------------------
+
+
+@AspectJ based AOP (@AspectJ based annotations available from org.aspectj.lang.annotation package)
+
+
+@AspectJ refers to a style of declaring aspects as regular Java classes annotated with Java 5 annotations.
+Steps
+1.
+Its enabled by including the following element inside your XML file
+
+<aop:aspectj-autoproxy/>
+2.
+Jars required are same as in case of XML based configuration
+3.
+Declare an aspect -- with class level annotation @Aspect
+For auto scanning of aspects -- add @Compnent -- another class level annotation
+
+4.
+
+Declare a pointcut
+
+A pointcut helps in determining the join points (ie methods) of interest to be executed with different advices.
+annotation -- @Pointcut
+Pointcut has 2 parts --
+      A pointcut expression that determines exactly which method executions we are interested in.
+      A pointcut signature consisting of  a name and any number of parameters. The actual body of the method is irrelevant and in fact should be empty.
+
+The following  pointcut named 'businessService'  will match the execution of every method available in the classes under the package com.xyz.myapp.service:
+
+
+@Pointcut("execution(* com.xyz.myapp.service.*.*(..))") // expression 
+private void businessService() {}  // signature
+
+The following example defines a pointcut named 'getname' that will match the execution of getName() method available in Student class under the package com.aop.simple :
+
+@Pointcut("execution(* com.aop.simple.Student.getName(..))") 
+private void getname() {}
+
+5.
+Declare advices
+
+You can declare any of the five advices using @{ADVICE-NAME} annotations as given below. This assumes that you already have defined a pointcut signature method businessService():
+
+@Before("businessService()")
+public void doBeforeTask(){
+ ...
+}
+
+@After("businessService()")
+public void doAfterTask(){
+ ...
+}
+
+@AfterReturning(pointcut = "businessService()", returning="retVal")
+public void doAfterReturnningTask(Object retVal){
+  // you can intercept retVal here.
+  ...
+}
+
+@AfterThrowing(pointcut = "businessService()", throwing="ex")
+public void doAfterThrowingTask(Exception ex){
+  // you can intercept thrown exception here.
+  ...
+}
+
+@Around("businessService()")
+public Object doAroundTask(ProceedingJoinPoint p){
+ ...
+}
+
+You can define your pointcut inline for any of the advices. Below is an example to define inline pointcut for before advice:
+
+@Before("execution(* com.xyz.myapp.service.*.*(..))")
+public doBeforeTask(){
+ ...
+}
+
+
+Simple example -- eclipse project --spring_aop3
+Aspect--com.app.aspects.LoggingAspect
+Target Bean i/f --com.app.simple.Customer
+Target Bean class--com.app.simple.CustomerImpl
+xml -- from resources spring-config.xml
+tester -- com.app.TestAspects
+
+

@@ -1,0 +1,78 @@
+Using Message Resource Bundles for I18N & Localization support
+
+Background
+Understand need of Message resource bundles & that of I18N, L10N
+
+Spring's solution
+
+org.springframework.context.MessageSource 
+Central interface for resolving messages, with support for the parameterization and internationalization of such messages.
+
+Spring provides two rdy implementation classes
+
+1.  ResourceBundleMessageSource -- built on top of the standard ResourceBundle
+2. ReloadableResourceBundleMessageSource --  able to reload message definitions without restarting the VM 
+
+For Java SE based simple applications , can use 1st option.
+
+In Spring, you can use ResourceBundleMessageSource to resolve text messages from properties file, based on the selected locales. Its built on JDK's ResourceBundle class & can use parsing provided by JDK's MessageFormat
+Steps 
+1. 
+Identify messages & create property files by  choosing basename.
+eg -- If basename= messages , then property file name for US English locale will be
+messages_en_US.properties or that for Hindi locale will be messages_hi_IN.properties
+
+2. Store property files in classpath typically.
+
+3. In xml config file -- add following bean entry to register message resource bundle.
+<bean id="messageSource" 		class="org.springframework.context.support.ResourceBundleMessageSource">
+<property name="basename">
+<value>locale\LoginAction</value>
+</property>
+</bean>
+
+4. In  tester application -- use follwoing API to get I18N message 
+
+API of org.springframework.context.MessageResource i/f 
+
+String getMessage(String code,Object[] args,Locale locale) throws NoSuchMessageException
+
+--- Tries to resolve the message. Treats as an error if the message can't be found.
+
+example -- eclipse project -- spring_intro
+pkg -- com.app.simple10
+property files -- from resources\locale 
+tester -- MainApp
+
+
+5.  How to access MessageSource in spring bean
+-- Soln is via  org.springframework.MessageSourceAware i/f
+
+During Spring container initialization, if any bean class  implements the MessageSourceAware interface, Spring will automatically inject the MessageSource into the class via setMessageSource(MessageSource messageSource) setter method.
+Prog job --- just implement i/f & supply setter method & then bean class can avail MessageSource readily.
+
+eg
+public class CustomerService implements MessageSourceAware
+{
+	private MessageSource messageSource;
+ 
+	public void setMessageSource(MessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+ 
+	public void printMessage(){
+		String details = messageSource.getMessage("customer.dtls", 
+    			new Object[] { "abc", "25","Spring" },Locale.US);
+ 
+    	System.out.println("Customer Details (English) : " + details);
+ 
+    	}
+ 
+}
+
+
+
+
+
+
+

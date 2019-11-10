@@ -1,0 +1,19 @@
+spring autowiring:-
+-------------------------------------------------------------------------------
+constructor:- when one time initalization is required
+set base injection:- when you needs to change the proprty value..set mehtod can be used
+autowiring:- no, by name, by type, by constructor
+constructor is equal to by type in spring
+
+beans type:- componenet, controller, service, reposirtoy
+init life cycle method- post constructor
+destroy- predestroy
+@autowire-by default takes by type. it can be used with set, construct, or with interface 
+
+registershotdownhook for shoutdown spring container-use 
+Qualifier to use specific bean when multiple beans are available in spring container
+uses of qualifier
+
+
+convert spring xml base into annotation base 
+
