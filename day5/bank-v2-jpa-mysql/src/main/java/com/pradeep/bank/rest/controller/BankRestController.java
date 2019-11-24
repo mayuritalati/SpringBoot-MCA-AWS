@@ -59,7 +59,7 @@ public class BankRestController {
 	
 	@ApiOperation("get  account by accno") //swaagger specific annotation
 	@GetMapping("/{accno}")
-	public Account getAccount(@PathVariable("accno") int accno){
+	public ResponseEntity getAccount(@PathVariable("accno") int accno){
 		return as.findByAccno(accno);
 	}
 	
