@@ -9,14 +9,13 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.mayuri</groupId>
-	<artifactId>spring-config-server</artifactId>
+	<artifactId>spring-config-client-test</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>spring-config-server</name>
+	<name>spring-config-client-test</name>
 	<description>spring-config-serverproject for Spring Boot</description>
 
 	<properties>
 		<java.version>1.8</java.version>
-		<spring-boot-admin.version>2.1.5</spring-boot-admin.version>
 		<spring-cloud.version>Greenwich.SR4</spring-cloud.version>
 	</properties>
 
@@ -33,13 +32,9 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web-services</artifactId>
 		</dependency>
-	 	<dependency>
-			<groupId>de.codecentric</groupId>
-			<artifactId>spring-boot-admin-starter-client</artifactId>
-		</dependency> 
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-config-server</artifactId>
+			<artifactId>spring-cloud-starter-config</artifactId>
 		</dependency>
 
 		<dependency>
@@ -53,6 +48,12 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>de.codecentric</groupId>
+			<artifactId>spring-boot-admin-client</artifactId>
+			<version>2.1.5</version>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
@@ -61,13 +62,6 @@
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-dependencies</artifactId>
 				<version>${spring-cloud.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>de.codecentric</groupId>
-				<artifactId>spring-boot-admin-dependencies</artifactId>
-				<version>${spring-boot-admin.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
